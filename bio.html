@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ゲノム解析</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Noto Sans JP", sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #333;
+        line-height: 1.6;
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .container {
+        max-width: 800px;
+        width: 95%;
+        margin: 20px auto;
+        padding: 30px;
+        background-color: rgba(255, 255, 255, 0.95);
+        box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+        border-radius: 15px;
+        position: relative;
+        overflow: hidden;
+      }
+      .container::before {
+        content: "";
+        position: absolute;
+        top: -50px;
+        left: -50px;
+        width: 100px;
+        height: 100px;
+        background: #4a69bd;
+        transform: rotate(45deg);
+        z-index: -1;
+      }
+      .container::after {
+        content: "";
+        position: absolute;
+        bottom: -50px;
+        right: -50px;
+        width: 100px;
+        height: 100px;
+        background: #4a69bd;
+        transform: rotate(45deg);
+        z-index: -1;
+      }
+      h1 {
+        color: #4a69bd;
+        text-align: center;
+        font-size: 2.8em;
+        margin-bottom: 40px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        position: relative;
+      }
+      h1::after {
+        content: "";
+        display: block;
+        width: 100px;
+        height: 4px;
+        background: #4a69bd;
+        margin: 10px auto;
+      }
+      .question {
+        background-color: #fff;
+        border-left: 5px solid #4a69bd;
+        padding: 25px;
+        margin-bottom: 40px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        transition: transform 0.3s ease;
+      }
+      .question:hover {
+        transform: translateY(-5px);
+      }
+      .question h2 {
+        color: #4a69bd;
+        margin-top: 0;
+        font-size: 1.4em;
+      }
+      .options {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        margin-top: 20px;
+      }
+      .option {
+        background-color: #f0f0f0;
+        border: none;
+        padding: 15px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 1em;
+        font-weight: 500;
+      }
+      .option:hover {
+        background-color: #e0e0e0;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+      .option.selected {
+        background-color: #4a69bd;
+        color: white;
+      }
+      .hint {
+        font-size: 0.9em;
+        color: #666;
+        margin-top: 15px;
+        font-style: italic;
+        display: flex;
+        align-items: center;
+      }
+      .hint::before {
+        content: "💡";
+        margin-right: 5px;
+        font-size: 1.2em;
+      }
+      .submit-btn {
+        display: block;
+        width: 250px;
+        margin: 40px auto;
+        padding: 15px;
+        background-color: #4a69bd;
+        color: white;
+        border: none;
+        border-radius: 30px;
+        font-size: 1.2em;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11),
+          0 1px 3px rgba(0, 0, 0, 0.08);
+      }
+      .submit-btn:hover {
+        background-color: #3c55a5;
+        transform: translateY(-2px);
+        box-shadow: 0 7px 14px rgba(50, 50, 93, 0.1),
+          0 3px 6px rgba(0, 0, 0, 0.08);
+      }
+      #result {
+        text-align: center;
+        font-size: 1.4em;
+        font-weight: bold;
+        margin-top: 30px;
+        padding: 20px;
+        background-color: #f0f0f0;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>ゲノム解析</h1>
+      <div id="quiz">
+        <div class="question">
+          <h2>問題 1: DNA・RNAの基本構造</h2>
+          <p>DNAとRNAの構造の違いについて、正しい記述はどれですか？</p>
+          <div class="options">
+            <button class="option">DNAは一本鎖、RNAは二重らせん構造</button>
+            <button class="option">DNAは二重らせん、RNAは一本鎖構造</button>
+            <button class="option">両方とも二重らせん構造</button>
+            <button class="option">両方とも一本鎖構造</button>
+          </div>
+          <p class="hint">ヒント：講義ページ1、スライド3-5を参照</p>
+        </div>
+
+        <div class="question">
+          <h2>問題 2: セントラルドグマ</h2>
+          <p>
+            遺伝情報の流れを表すセントラルドグマについて、正しい順序はどれですか？
+          </p>
+          <div class="options">
+            <button class="option">RNA → DNA → タンパク質</button>
+            <button class="option">DNA → タンパク質 → RNA</button>
+            <button class="option">DNA → RNA → タンパク質</button>
+            <button class="option">タンパク質 → DNA → RNA</button>
+          </div>
+          <p class="hint">ヒント：講義ページ1、スライド7-8を参照</p>
+        </div>
+
+        <div class="question">
+          <h2>問題 3: RNAの種類</h2>
+          <p>次のうち、タンパク質の合成に直接関与しないRNAはどれですか？</p>
+          <div class="options">
+            <button class="option">mRNA</button>
+            <button class="option">tRNA</button>
+            <button class="option">rRNA</button>
+            <button class="option">miRNA</button>
+          </div>
+          <p class="hint">ヒント：講義ページ1、スライド10-12を参照</p>
+        </div>
+
+        <div class="question">
+          <h2>問題 4: CRISPR-Cas9システム</h2>
+          <p>
+            CRISPR-Cas9システムにおいて、DNA切断を行う酵素は次のうちどれですか？
+          </p>
+          <div class="options">
+            <button class="option">crRNA</button>
+            <button class="option">Cas9</button>
+            <button class="option">tracrRNA</button>
+            <button class="option">PAM配列</button>
+          </div>
+          <p class="hint">ヒント：講義ページ2、スライド15-17を参照</p>
+        </div>
+
+        <div class="question">
+          <h2>問題 5: dCas9の特徴</h2>
+          <p>dCas9（デッドCas9）の特徴として正しいものはどれですか？</p>
+          <div class="options">
+            <button class="option">DNAを切断する能力が強化されている</button>
+            <button class="option">RNAを切断する能力を持つ</button>
+            <button class="option">
+              DNA切断能力を失っているが、特定配列に結合できる
+            </button>
+            <button class="option">タンパク質合成を直接促進する</button>
+          </div>
+          <p class="hint">ヒント：講義ページ2、スライド20-22を参照</p>
+        </div>
+
+        <div class="question">
+          <h2>問題 6: RNA干渉（RNAi）</h2>
+          <p>RNA干渉のメカニズムで主に関与するRNA分子は次のうちどれですか？</p>
+          <div class="options">
+            <button class="option">mRNA</button>
+            <button class="option">tRNA</button>
+            <button class="option">siRNA</button>
+            <button class="option">rRNA</button>
+          </div>
+          <p class="hint">ヒント：講義ページ2、スライド25-27を参照</p>
+        </div>
+
+        <div class="question">
+          <h2>問題 7: 次世代シーケンシング（NGS）</h2>
+          <p>NGSの主な利点は何ですか？</p>
+          <div class="options">
+            <button class="option">DNA配列を1本ずつ正確に読み取れる</button>
+            <button class="option">
+              多数のDNA断片を並行して高速に解析できる
+            </button>
+            <button class="option">タンパク質の立体構造を直接解析できる</button>
+            <button class="option">RNA干渉を効率的に誘導できる</button>
+          </div>
+          <p class="hint">ヒント：講義ページ2、スライド30-32を参照</p>
+        </div>
+
+        <div class="question">
+          <h2>問題 8: 転写因子の機能</h2>
+          <p>転写因子の主な役割は何ですか？</p>
+          <div class="options">
+            <button class="option">DNAの複製</button>
+            <button class="option">タンパク質の翻訳</button>
+            <button class="option">遺伝子発現の制御</button>
+            <button class="option">RNAのスプライシング</button>
+          </div>
+          <p class="hint">ヒント：講義ページ3、スライド35-37を参照</p>
+        </div>
+
+        <div class="question">
+          <h2>問題 9: エピジェネティクス</h2>
+          <p>
+            次のうち、エピジェネティックな制御機構に含まれないものはどれですか？
+          </p>
+          <div class="options">
+            <button class="option">DNAのメチル化</button>
+            <button class="option">ヒストン修飾</button>
+            <button class="option">クロマチン構造の変化</button>
+            <button class="option">DNA配列の変異</button>
+          </div>
+          <p class="hint">ヒント：講義ページ3、スライド40-42を参照</p>
+        </div>
+
+        <div class="question">
+          <h2>問題 10: p53遺伝子の機能</h2>
+          <p>p53遺伝子の主な機能は次のうちどれですか？</p>
+          <div class="options">
+            <button class="option">細胞増殖の促進</button>
+            <button class="option">がん抑制</button>
+            <button class="option">DNAの複製</button>
+            <button class="option">タンパク質の翻訳促進</button>
+          </div>
+          <p class="hint">ヒント：講義ページ3、スライド45-47を参照</p>
+        </div>
+
+        <div class="question">
+          <h2>問題 11: RNA折りたたみ構造</h2>
+          <p>RNAの二次構造で見られない形態はどれですか？</p>
+          <div class="options">
+            <button class="option">ステムループ構造</button>
+            <button class="option">ヘアピン構造</button>
+            <button class="option">二重らせん構造</button>
+            <button class="option">四重鎖構造</button>
+          </div>
+          <p class="hint">ヒント：講義ページ3、スライド50-52を参照</p>
+        </div>
+
+        <div class="question">
+          <h2>問題 12: EGFR（上皮成長因子受容体）の役割</h2>
+          <p>EGFRの主な機能は次のうちどれですか？</p>
+          <div class="options">
+            <button class="option">DNAの修復</button>
+            <button class="option">細胞増殖シグナルの伝達</button>
+            <button class="option">RNAのスプライシング</button>
+            <button class="option">タンパク質の分解</button>
+          </div>
+          <p class="hint">ヒント：講義ページ3、スライド55-57を参照</p>
+        </div>
+
+        <div class="question">
+          <h2>問題 13: Ras遺伝子の特徴</h2>
+          <p>Ras遺伝子に関する記述で正しいものはどれですか？</p>
+          <div class="options">
+            <button class="option">常にがん抑制的に働く</button>
+            <button class="option">細胞増殖シグナル伝達に関与する</button>
+            <button class="option">RNAの安定性を制御する</button>
+            <button class="option">ミトコンドリアの機能を調節する</button>
+          </div>
+          <p class="hint">ヒント：講義ページ3、スライド60-62を参照</p>
+        </div>
+
+        <div class="question">
+          <h2>問題 14: miRNAの機能</h2>
+          <p>miRNA（マイクロRNA）の主な機能は次のうちどれですか？</p>
+          <div class="options">
+            <button class="option">タンパク質の翻訳</button>
+            <button class="option">DNAの複製</button>
+            <button class="option">遺伝子発現の調節</button>
+            <button class="option">細胞膜の形成</button>
+          </div>
+          <p class="hint">ヒント：講義ページ1、スライド65-67を参照</p>
+        </div>
+
+        <div class="question">
+          <h2>問題 15: CRISPR-Cas9の応用</h2>
+          <p>
+            CRISPR-Cas9技術の潜在的な応用分野として適切でないものはどれですか？
+          </p>
+          <div class="options">
+            <button class="option">遺伝子治療</button>
+            <button class="option">農作物の品種改良</button>
+            <button class="option">タンパク質の立体構造解析</button>
+            <button class="option">遺伝子機能の研究</button>
+          </div>
+          <p class="hint">ヒント：講義ページ2、スライド70-72を参照</p>
+        </div>
+
+        <div class="question">
+          <h2>問題 16: トランスクリプトーム解析</h2>
+          <p>トランスクリプトーム解析で主に調べられるのは何ですか？</p>
+          <div class="options">
+            <button class="option">ゲノムDNAの配列</button>
+            <button class="option">タンパク質の発現量</button>
+            <button class="option">RNAの発現パターン</button>
+            <button class="option">代謝物質の種類と量</button>
+          </div>
+          <p class="hint">ヒント：講義全体、特にスライド75-77を参照</p>
+        </div>
+
+        <div class="question">
+          <h2>問題 17: エピゲノム編集</h2>
+          <p>dCas9を用いたエピゲノム編集の目的は何ですか？</p>
+          <div class="options">
+            <button class="option">DNA配列の直接的な変更</button>
+            <button class="option">RNAの分解促進</button>
+            <button class="option">遺伝子発現の制御</button>
+            <button class="option">タンパク質の翻訳促進</button>
+          </div>
+          <p class="hint">ヒント：講義ページ2、スライド80-82を参照</p>
+        </div>
+
+        <div class="question">
+          <h2>問題 18: NGSの読み取り長</h2>
+          <p>一般的なNGSの1回の読み取り長はどの程度ですか？</p>
+          <div class="options">
+            <button class="option">約10塩基対</button>
+            <button class="option">約100-150塩基対</button>
+            <button class="option">約1,000-2,000塩基対</button>
+            <button class="option">約10,000塩基対以上</button>
+          </div>
+          <p class="hint">ヒント：講義ページ2、スライド85-87を参照</p>
+        </div>
+
+        <div class="question">
+          <h2>問題 19: RNA干渉の応用</h2>
+          <p>RNA干渉技術の潜在的な応用として最も適切なものはどれですか？</p>
+          <div class="options">
+            <button class="option">DNAの複製速度の向上</button>
+            <button class="option">特定の遺伝子の発現抑制による治療</button>
+            <button class="option">タンパク質の翻訳速度の増加</button>
+            <button class="option">細胞分裂の促進</button>
+          </div>
+          <p class="hint">ヒント：講義ページ2、スライド90-92を参照</p>
+        </div>
+
+        <div class="question">
+          <h2>問題 20: 遺伝子発現制御の複雑性</h2>
+          <p>
+            遺伝子発現制御の複雑性を示す要因として適切でないものはどれですか？
+          </p>
+          <div class="options">
+            <button class="option">転写因子の多様性</button>
+            <button class="option">エピジェネティックな制御</button>
+            <button class="option">RNAの安定性と分解</button>
+            <button class="option">DNAの塩基配列の単純さ</button>
+          </div>
+          <p class="hint">ヒント：講義全体、特にスライド95-97を参照</p>
+        </div>
+      </div>
+      <button class="submit-btn" onclick="checkAnswers()">回答を送信</button>
+      <div id="result"></div>
+    </div>
+    <script>
+      const correctAnswers = [
+        1, 2, 3, 1, 2, 2, 1, 2, 3, 1, 3, 1, 1, 2, 2, 2, 2, 1, 1, 3,
+      ];
+
+      function checkAnswers() {
+        const questions = document.querySelectorAll(".question");
+        let score = 0;
+
+        questions.forEach((question, index) => {
+          const selectedOption = question.querySelector(".option.selected");
+          if (selectedOption) {
+            const selectedIndex = Array.from(
+              selectedOption.parentNode.children
+            ).indexOf(selectedOption);
+            if (selectedIndex === correctAnswers[index]) {
+              score++;
+            }
+          }
+        });
+
+        const resultElement = document.getElementById("result");
+        resultElement.textContent = `スコア: ${score} / ${questions.length}`;
+        resultElement.style.display = "block";
+
+        // スコアに応じてメッセージを表示
+        let message = "";
+        if (score === questions.length) {
+          message = "完璧です！あなたは真の遺伝子マスターです！";
+        } else if (score >= questions.length * 0.8) {
+          message = "素晴らしい成績です！あと少しで完璧です。";
+        } else if (score >= questions.length * 0.6) {
+          message = "良い成績です。もう少し復習しましょう。";
+        } else {
+          message = "もう一度講義を復習しましょう。がんばって！";
+        }
+        resultElement.innerHTML += `<br>${message}`;
+      }
+
+      document.querySelectorAll(".option").forEach((option) => {
+        option.addEventListener("click", function () {
+          const parent = this.parentNode;
+          parent
+            .querySelectorAll(".option")
+            .forEach((opt) => opt.classList.remove("selected"));
+          this.classList.add("selected");
+        });
+      });
+    </script>
+  </body>
+</html>
